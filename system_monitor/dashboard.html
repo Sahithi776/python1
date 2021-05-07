@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="echarts.js"></script>
+    <script type="text/javascript">
+        let received_data = null;
+    </script>
+</head>
+<body>
+    <table>
+        <tr>
+            <td>
+                <div id="memory" style="width: 750px;height:400px;">
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div id="disk" style="width: 750px;height:400px;">
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div id="cpu" style="width: 750px;height:400px;">
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div id="load" style="width: 750px;height:400px;">
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div id="nettraffic" style="width: 750px; height:400px">
+                </div>
+            </td>
+
+        </tr>
+        <tr>
+            <td>
+                <div id="internetout" style="width: 750px;height:400px;">
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <div id="internetin" style="width: 750px;height:400px;">
+                </div>
+            </td>
+
+        </tr>
+
+    </table>
+    <script>
+
+        MemChart = echarts.init(document.getElementById('memory'));
+        mem_chart = {
+            title: {
+                text: "MEMORY UTILIZATION"
+            },
+            xAxis: {
+                type: 'category',
+                data: []
+            },
+            yAxis: {
+                min: 0,
+                max: 100,
+                type: 'value'
+            },
+            series: [{
+                data: [],
+                type: 'bar',
+                showBackground: true,
+                backgroundStyle: {
+                    color: 'rgba(102, 204, 0, 0.8)'
+                }
+            }]
+        };
+
+        DChart = echarts.init(document.getElementById('disk'));
+        d_chart = {
+            title: {
+                text: "DISK UTILIZATION"
+            },
+            xAxis: {
+                type: 'category',
+                data: []
+            },
+            yAxis: {
+                min: 0,
+                max: 100,
+                type: 'value'
+            },
+            series: [{
+                data: [],
+                type: 'bar',
+                showBackground: true,
+                backgroundStyle: {
+                    color: 'rgba(100, 202, 0, 0.8)'
+                }
+            }]
+        };
+
+        CChart = echarts.init(document.getElementById('cpu'));
+
+        c_chart = {
+            legend: {
+                show: true,
+                data: []
+            },
+            title: {
+                text: "CPU"
+            },
+            xAxis: {
+                type: 'category',
+                data: []
+            },
+            yAxis: {
+                type: 'value',
+                min: 0,
+                max: 100
+            },
+            series: []
+        };
+
+        LChart = echarts.init(document.getElementById('load'));
+
+        l_chart = {
+            legend: {
+                show: true,
+                data: []
+            },
+            title: {
+                text: "LOAD AVERAGES"
+            },
+            xAxis: {
+                type: 'category',
+                data: []
+            },
+            yAxis: {
+                type: 'value',
+                min: 0,
+                max: 100
+            },
+            series: []
+        };
+
+        NetTrChart = echarts.init(document.getElementById('nettraffic'));
+
+        nettr_chart = {
+            legend: {
+                show: true,
+                data: []
+            },
+            title: {
+                text: "NET TRAFFIC"
+            },
+            xAxis: {
+                type: 'category',
+                data: []
+            },
+            yAxis: {
+                type: 'value',
+                min: 1000,
+                max: 1000000
+            },
+            series: []
+        };
+
+
+        InternetINChart = echarts.init(document.getElementById('internetin'));
+        internetIn_chart = {
+            title: {
+                text: "INTERNET DOWNLOAD"
+            },
+            xAxis: {
+                type: 'category',
+                data: []
+            },
+            yAxis: {
+                type: 'value',
+                min: 0,
+                max: 1000
+            },
+            series: [{
+                data: [],
+                type: 'bar',
+                showBackground: true,
+                backgroundStyle: {
+                    color: 'rgba(100, 202, 0, 0.8)'
+                }
+            }]
+        };
+
+        InternetOUTChart = echarts.init(document.getElementById('Internetout'));
+        internetout_chart = {
+            title: {
+                text: "NET UPLOAD"
+            },
+            xAxis: {
+                type: 'category',
+                data: []
+            },
+            yAxis: {
+                type: 'value',
+                min: 0,
+                max: 1000
+            },
+            series: [{
+                data: [],
+                type: 'bar',
+                showBackground: true,
+                backgroundStyle: {
+                    color: 'rgba(102, 204, 0, 0.8)'
+                }
+            }]
+        };
+
+
+        function populateData(received_data) {
+            if (received_data == null) { return; }
+
+            if (d_chart.xAxis.data.length == 0) {
+                d_chart.xAxis.data.push(received_data["time"]);
+                d_chart.series[0].data.push(received_data["disk_utilized"]);
+            }
+            else {
+                d_chart.xAxis.data[0] = received_data["time"];
+                d_chart.series[0].data[0] = received_data["disk_utilized"];
+            }
+            DChart.setOption(d_chart);
+
+
+            if (netin_chart.xAxis.data.length == 0) {
+                netin_chart.xAxis.data.push(received_data["time"]);
+                netin_chart.series[0].data.push(received_data["net_download"]);
+            }
+            else {
+                netin_chart.xAxis.data[0] = received_data["time"];
+                netin_chart.series[0].data[0] = received_data["net_download"];
+            }
+            NetINChart.setOption(netin_chart);
+
+            if (netout_chart.xAxis.data.length == 0) {
+                netout_chart.xAxis.data.push(received_data["time"]);
+                netout_chart.series[0].data.push(received_data["net_upload"]);
+            }
+            else {
+                netout_chart.xAxis.data[0] = received_data["time"];
+                netout_chart.series[0].data[0] = received_data["net_upload"];
+            }
+            NetOUTChart.setOption(netout_chart);
+
+            if (mem_chart.xAxis.data.length == 0) {
+                mem_chart.xAxis.data.push(received_data["time"]);
+                mem_chart.series[0].data.push(received_data["virtual_memory_utilized"]);
+            }
+            else {
+                mem_chart.xAxis.data[0] = received_data["time"];
+                mem_chart.series[0].data[0] = received_data["virtual_memory_utilized"];
+            }
+            MemChart.setOption(mem_chart);
+
+            c_chart.xAxis.data.push(received_data["time"]);
+            series_created = false
+            if (c_chart.series.length > 0) {
+                series_created = true
+            }
+            for (const [key, value] of Object.entries(received_data["cpu"])) {
+                if (!series_created) {
+                    temp_obj = { 'name': key, 'type': 'line', 'data': [value] };
+                    c_chart.series.push(temp_obj);
+                    new_val = key;
+                    c_chart.legend.data.push(new_val);
+                }
+                else {
+                    for (i = 0; i < c_chart.series.length; ++i) {
+                        if (c_chart.series[i]["name"] == key) {
+                            c_chart.series[i].data.push(value);
+                            break;
+                        }
+                    }
+                }
+            }
+            CChart.setOption(c_chart);
+
+            l_chart.xAxis.data.push(received_data["time"]);
+            series_created = false
+            if (l_chart.series.length > 0) {
+                series_created = true
+            }
+            for (const [key, value] of Object.entries(received_data["load_avg"])) {
+                if (!series_created) {
+                    temp_obj = { 'name': key, 'type': 'line', 'data': [value] };
+                    l_chart.series.push(temp_obj);
+                    new_val = key;
+                    l_chart.legend.data.push(new_val);
+                }
+                else {
+                    for (i = 0; i < l_chart.series.length; ++i) {
+                        if (l_chart.series[i]["name"] == key) {
+                            l_chart.series[i].data.push(value);
+                            break;
+                        }
+                    }
+                }
+            }
+            LChart.setOption(l_chart);
+
+            internettr_chart.xAxis.data.push(received_data["time"]);
+            series_created = false
+            if (internettr_chart.series.length > 0) {
+                series_created = true
+            }
+            for (const [key, value] of Object.entries(received_data["net_traffic"])) {
+                if (!series_created) {
+                    temp_obj = { 'name': key, 'type': 'line', 'data': [value] };
+                    nettr_chart.series.push(temp_obj);
+                    new_val = key;
+                    nettr_chart.legend.data.push(new_val);
+                }
+                else {
+                    for (i = 0; i < l_chart.series.length; ++i) {
+                        if (nettr_chart.series[i]["name"] == key) {
+                            nettr_chart.series[i].data.push(value);
+                            break;
+                        }
+                    }
+                }
+            }
+            NetTrChart.setOption(nettr_chart);
+        }
+
+        window.setInterval(function () {
+            socket = new WebSocket("ws://localhost:5000");
+            socket.onmessage = function (event) {
+                populateData(JSON.parse(event.data));
+            };
+            socket.onopen = function (event) {
+                socket.send("");
+            }
+        }, 1000);
+    </script>
+
+</body>
+</html>
